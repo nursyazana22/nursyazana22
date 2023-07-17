@@ -1,10 +1,13 @@
-import random
-import socket
-import threading
+#include <iostream>
+#include <random>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <cstring>
 
 MIN_NUMBER = 50000
 MAX_NUMBER = 80000
 
+    int main () {
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 server_address = ('localhost', 12345)
@@ -33,6 +36,8 @@ def start_server():
   
         client_thread = threading.Thread(target=handle_client, args=(client_socket,))
         client_thread.start()
-
+    
+    return 0
+    }
 
 start_server()
