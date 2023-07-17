@@ -1,3 +1,6 @@
+#include <stdio.h>
+int main()
+{
 def fibonacci(n):
  
   if n == 0:
@@ -13,3 +16,5 @@ def main():
 
 if __name__ == "__main__":
   main()
+}
+
