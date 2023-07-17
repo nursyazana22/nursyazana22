@@ -1,18 +1,40 @@
-import socket
-import random
+#include <iostream>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <cstring>
 
-def main():
+int main() {
 
-  client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  client_socket.connect(("localhost", 8080))
+    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (clientSocket == -1) {
+        std::cerr << "Failed to create socket" << std::endl;
+        return 1;
+    }
+    sockaddr_in serverAddress{};
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_port = htons(12345);
+    if (inet_pton(AF_INET, "127.0.0.1", &(serverAddress.sin_addr)) <= 0) {
+        std::cerr << "Invalid address or address not supported" << std::endl;
+        return 1;
+    }
 
-  random_number = random.randint(1, 100)
+    if (connect(clientSocket, reinterpret_cast<sockaddr*>(&serverAddress), sizeof(serverAddress)) == -1) {
+        std::cerr << "Failed to connect " << std::endl;
+        return 1;
+    }
+    char numberBuffer[256];
+    memset(numberBuffer, 0, sizeof(numberBuffer));
+    ssize_t bytesRead = recv(clientSocket, numberBuffer, sizeof(numberBuffer) - 1, 0);
+    if (bytesRead == -1) {
+        std::cerr << "Failed to receive data" << std::endl;
+        return 1;
+    }
 
-  client_socket.sendall(str(random_number).encode("utf-8")
-  
-  received_random_number = client_socket.recv(1024).decode("utf-8")
+    std::cout << "Random number: " << numberBuffer << std::endl;
 
-  print("The random number is:", received_random_number)
+    // Close the socket
+    close(clientSocket);
 
-if __name__ == "__main__":
-  main()
+    return 0;
+}
