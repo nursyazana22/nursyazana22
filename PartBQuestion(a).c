@@ -1,11 +1,38 @@
 import random
+import socket
+import threading
 
-def get_random_number():
-  return random.randint(50000, 80000)
+MIN_NUMBER = 50000
+MAX_NUMBER = 80000
 
-def main():
-  number = get_random_number()
-  print("Passing random number:", number)
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-if __name__ == "__main__":
-  main()
+server_address = ('localhost', 12345)
+server_socket.bind(server_address)
+
+server_socket.listen(1)
+print('Server is listening on {}:{}'.format(*server_address))
+
+def handle_client(client_socket):
+    random_number = random.randint(MIN_NUMBER, MAX_NUMBER)
+
+    number_bytes = str(random_number).encode('utf-8')
+
+    client_socket.sendall(number_bytes)
+
+
+    client_socket.close()
+
+
+def start_server():
+    while True:
+      
+        client_socket, client_address = server_socket.accept()
+        print('Received connection from {}:{}'.format(*client_address))
+
+  
+        client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+        client_thread.start()
+
+
+start_server()
